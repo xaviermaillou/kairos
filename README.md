@@ -41,3 +41,24 @@ The endpoint returns:
 ```json
 {"status":"ok"}
 ```
+
+## Run with Docker Compose
+
+Java and Maven do not need to be installed on the host when the application is
+run in containers.
+
+```bash
+docker compose up --build
+```
+
+Then check the health endpoint:
+
+```bash
+curl http://localhost:8080/health
+```
+
+Stop the application with `Ctrl+C`, then remove its container with:
+
+```bash
+docker compose down
+```
