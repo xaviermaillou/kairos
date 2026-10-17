@@ -2,5 +2,31 @@ services:
   app:
     build:
       context: .
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/kairos
+      SPRING_DATASOURCE_USERNAME: kairos
+      SPRING_DATASOURCE_PASSWORD: kairos
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - "8080:8080"
+
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: kairos
+      POSTGRES_USER: kairos
+      POSTGRES_PASSWORD: kairos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kairos -d kairos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

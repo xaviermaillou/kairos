@@ -39,7 +39,10 @@ curl http://localhost:8080/health
 The endpoint returns:
 
 ```json
-{"status":"ok"}
+[
+  {"source":"application","result":1},
+  {"source":"database","result":1}
+]
 ```
 
 ## Run with Docker Compose
@@ -56,6 +59,9 @@ Then check the health endpoint:
 ```bash
 curl http://localhost:8080/health
 ```
+
+PostgreSQL is available on port `5432` with the development database, user and
+password all named `kairos`. Its data is stored in the `postgres-data` volume.
 
 Stop the application with `Ctrl+C`, then remove its container with:
 
