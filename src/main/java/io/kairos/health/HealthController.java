@@ -1,6 +1,6 @@
 package io.kairos.health;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,15 +11,17 @@ public class HealthController {
 
     record HealthDetail(String source, Integer result) {}
 
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcClient jdbcClient;
 
-    public HealthController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public HealthController(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
     }
 
     @GetMapping("/health")
     public List<HealthDetail> health() {
-        Integer result = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
+        Integer result = jdbcClient.sql("SELECT 1")
+                .query(Integer.class)
+                .single();
 
         return List.of(
             new HealthDetail(
