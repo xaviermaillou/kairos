@@ -1,4 +1,4 @@
-package io.kairos.health;
+package io.kairos.controller;
 
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.web.bind.annotation.GetMapping;

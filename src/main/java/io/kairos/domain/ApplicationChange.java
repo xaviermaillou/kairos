@@ -2,8 +2,10 @@ package io.kairos.domain;
 
 /** A typed change shared by update suggestions and applied events. */
 public sealed interface ApplicationChange {
-    record StatusChanged(ApplicationStatus previous, ApplicationStatus next)
-            implements ApplicationChange {
+    record StatusChanged(
+            ApplicationStatus previous,
+            ApplicationStatus next
+    ) implements ApplicationChange {
         public StatusChanged {
             Checks.required(previous, "previous");
             Checks.required(next, "next");
@@ -13,7 +15,9 @@ public sealed interface ApplicationChange {
         }
     }
 
-    record InterviewStepAdded(ApplicationInterviewStep step) implements ApplicationChange {
+    record InterviewStepAdded(
+            ApplicationInterviewStep step
+    ) implements ApplicationChange {
         public InterviewStepAdded {
             Checks.required(step, "step");
         }
@@ -33,4 +37,3 @@ public sealed interface ApplicationChange {
         }
     }
 }
-
