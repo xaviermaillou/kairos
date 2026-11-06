@@ -4,6 +4,7 @@ import com.kairos.domain.Application;
 import com.kairos.domain.ApplicationStatus;
 import com.kairos.repository.ApplicationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -16,9 +17,10 @@ public class ApplicationService {
         this.applicationRepository = applicationRepository;
     }
 
+    @Transactional
     public Application changeStatus(UUID applicationId, ApplicationStatus next) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new ApplicationNotFoundException(
                         "Unknown application: " + applicationId
                 ));
 

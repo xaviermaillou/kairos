@@ -23,7 +23,7 @@ public record Application(
         Checks.required(next, "next");
 
         if (status == next) {
-            throw new IllegalArgumentException("Application already has status " + status);
+            throw new IllegalStateException("Application already has status " + status);
         }
 
         boolean transitionAllowed = switch (status) {
