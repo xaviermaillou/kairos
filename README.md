@@ -11,7 +11,7 @@ have not been implemented yet.
 - Typed application changes and an event history model
 - A Spring Boot application with a health endpoint
 
-The domain sources are under `src/main/java/io/kairos/domain`.
+The domain sources are under `src/main/java/com/kairos/domain`.
 
 ## Requirements
 

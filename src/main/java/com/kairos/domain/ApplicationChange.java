@@ -1,4 +1,4 @@
-package io.kairos.domain;
+package com.kairos.domain;
 
 /** A typed change shared by update suggestions and applied events. */
 public sealed interface ApplicationChange {

@@ -1,18 +1,18 @@
-package io.kairos.service;
+package com.kairos.service;
 
-import io.kairos.domain.Application;
-import io.kairos.domain.ApplicationStatus;
-import io.kairos.repository.ApplicationRepository;
+import com.kairos.domain.Application;
+import com.kairos.domain.ApplicationStatus;
+import com.kairos.repository.ApplicationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
-public class ChangeApplicationStatusService {
+public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
 
-    public ChangeApplicationStatusService(ApplicationRepository applicationRepository) {
+    public ApplicationService(ApplicationRepository applicationRepository) {
         this.applicationRepository = applicationRepository;
     }
 

@@ -80,3 +80,97 @@ databaseChangeLog:
               - column:
                   name: offer_work_arrangement
                   type: VARCHAR(100)
+  - changeSet:
+      id: 3-share-job-offer-snapshots
+      author: kairos
+      changes:
+        - createTable:
+            tableName: job_offers
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: company_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: job_offer_snapshots
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_offer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_job_offer_snapshots_offer
+                    references: job_offers(id)
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: location
+                  type: VARCHAR(255)
+              - column:
+                  name: country
+                  type: VARCHAR(100)
+              - column:
+                  name: work_arrangement
+                  type: VARCHAR(100)
+              - column:
+                  name: captured_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+        - addColumn:
+            tableName: applications
+            columns:
+              - column:
+                  name: job_offer_snapshot_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_applications_offer_snapshot
+                    references: job_offer_snapshots(id)
+        - dropColumn:
+            tableName: applications
+            columnName: job_offer_id
+        - dropColumn:
+            tableName: applications
+            columnName: offer_title
+        - dropColumn:
+            tableName: applications
+            columnName: offer_company_name
+        - dropColumn:
+            tableName: applications
+            columnName: offer_content
+        - dropColumn:
+            tableName: applications
+            columnName: offer_location
+        - dropColumn:
+            tableName: applications
+            columnName: offer_country
+        - dropColumn:
+            tableName: applications
+            columnName: offer_work_arrangement

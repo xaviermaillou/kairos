@@ -1,4 +1,4 @@
-package io.kairos.domain;
+package com.kairos.domain;
 
 import java.util.Objects;
 import java.util.UUID;

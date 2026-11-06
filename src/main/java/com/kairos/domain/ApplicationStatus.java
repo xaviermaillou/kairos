@@ -1,4 +1,4 @@
-package io.kairos.domain;
+package com.kairos.domain;
 
 public enum ApplicationStatus {
     SENT,
