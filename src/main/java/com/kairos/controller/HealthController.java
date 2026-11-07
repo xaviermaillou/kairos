@@ -17,7 +17,7 @@ public class HealthController {
         this.jdbcClient = jdbcClient;
     }
 
-    @GetMapping("/health")
+    @GetMapping("/api/health")
     public List<HealthDetail> health() {
         Integer result = jdbcClient.sql("SELECT 1")
                 .query(Integer.class)

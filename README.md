@@ -34,7 +34,7 @@ mvn spring-boot:run
 Once the application is running, check its health with:
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:8080/api/health
 ```
 
 The endpoint returns:
@@ -58,7 +58,7 @@ docker compose up --build
 Then check the health endpoint:
 
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:8080/api/health
 ```
 
 PostgreSQL is available on port `5432` with the development database, user and
@@ -72,10 +72,16 @@ The sample application ID is:
 50000000-0000-0000-0000-000000000001
 ```
 
+All seeded applications can be listed with:
+
+```bash
+curl http://localhost:8080/api/applications
+```
+
 It can be changed with:
 
 ```bash
-curl -X PATCH http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/status \
+curl -X PATCH http://localhost:8080/api/applications/50000000-0000-0000-0000-000000000001/status \
   -H 'Content-Type: application/json' \
   -d '{"status":"ONGOING"}'
 ```
@@ -90,7 +96,7 @@ It can be replaced with:
 
 ```bash
 curl -X PUT \
-  http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/steps/60000000-0000-0000-0000-000000000001 \
+  http://localhost:8080/api/applications/50000000-0000-0000-0000-000000000001/steps/60000000-0000-0000-0000-000000000001 \
   -H 'Content-Type: application/json' \
   -d '{
     "type": "INTERVIEW",
@@ -111,7 +117,7 @@ A new step can be appended to the application pipeline with:
 
 ```bash
 curl -X POST \
-  http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/steps \
+  http://localhost:8080/api/applications/50000000-0000-0000-0000-000000000001/steps \
   -H 'Content-Type: application/json' \
   -d '{
     "type": "TECHNICAL_TEST",

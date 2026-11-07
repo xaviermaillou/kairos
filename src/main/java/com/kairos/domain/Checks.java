@@ -24,6 +24,7 @@ final class Checks {
             case ApplicationChange.StatusChanged ignored -> applicationId;
             case ApplicationChange.ResultChanged ignored -> applicationId;
             case ApplicationChange.StepAdded added -> added.step().applicationId();
+            case ApplicationChange.StepRemoved removed -> removed.step().applicationId();
             case ApplicationChange.StepChanged changed -> changed.next().applicationId();
         };
         if (!applicationId.equals(owner)) {

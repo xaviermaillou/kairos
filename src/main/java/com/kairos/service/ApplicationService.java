@@ -37,6 +37,22 @@ public class ApplicationService {
         this.applicationStepRepository = applicationStepRepository;
     }
 
+    @Transactional(readOnly = true)
+    public Application getApplication(UUID applicationId) {
+        return findApplication(applicationId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Application> getApplications() {
+        return applicationRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApplicationStep> getSteps(UUID applicationId) {
+        findApplication(applicationId);
+        return applicationStepRepository.findByApplicationId(applicationId);
+    }
+
     @Transactional
     public Application changeStatus(
             UUID applicationId,
@@ -182,6 +198,27 @@ public class ApplicationService {
         applicationEventRepository.save(event);
 
         return saved;
+    }
+
+    @Transactional
+    public void removeStep(UUID applicationId, UUID stepId) {
+        Application application = findApplication(applicationId);
+        ApplicationStep step = applicationStepRepository.findById(applicationId, stepId)
+                .orElseThrow(() -> new ApplicationStepNotFoundException(
+                        "Unknown application step: " + stepId
+                ));
+        ApplicationChange.StepRemoved change = new ApplicationChange.StepRemoved(step);
+        ApplicationEvent event = new ApplicationEvent(
+                UUID.randomUUID(),
+                application.id(),
+                application.userId(),
+                change,
+                Instant.now(),
+                null
+        );
+
+        applicationStepRepository.delete(step);
+        applicationEventRepository.save(event);
     }
 
     private Application findApplication(UUID applicationId) {

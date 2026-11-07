@@ -49,22 +49,32 @@ public class ApplicationStepRepository {
                         """)
                 .param("stepId", stepId)
                 .param("applicationId", applicationId)
-                .query((resultSet, rowNumber) -> new ApplicationStep(
-                        resultSet.getObject("id", UUID.class),
-                        resultSet.getObject("application_id", UUID.class),
-                        ApplicationStepType.valueOf(resultSet.getString("type")),
-                        resultSet.getString("title"),
-                        resultSet.getInt("position_index"),
-                        resultSet.getString("objective"),
-                        optionalFormat(resultSet.getString("format")),
-                        optionalDate(resultSet.getObject("scheduled_at", OffsetDateTime.class)),
-                        participants(resultSet.getString("participants")),
-                        resultSet.getString("practical_information"),
-                        resultSet.getString("preparation_notes"),
-                        resultSet.getString("debrief"),
-                        ApplicationStepStatus.valueOf(resultSet.getString("status"))
-                ))
+                .query((resultSet, rowNumber) -> mapStep(resultSet))
                 .optional();
+    }
+
+    public List<ApplicationStep> findByApplicationId(UUID applicationId) {
+        return jdbcClient.sql("""
+                        SELECT id,
+                               application_id,
+                               type,
+                               title,
+                               position_index,
+                               objective,
+                               format,
+                               scheduled_at,
+                               participants,
+                               practical_information,
+                               preparation_notes,
+                               debrief,
+                               status
+                        FROM application_steps
+                        WHERE application_id = :applicationId
+                        ORDER BY position_index, id
+                        """)
+                .param("applicationId", applicationId)
+                .query((resultSet, rowNumber) -> mapStep(resultSet))
+                .list();
     }
 
     public int nextPosition(UUID applicationId) {
@@ -165,6 +175,35 @@ public class ApplicationStepRepository {
                 .update();
 
         return step;
+    }
+
+    public void delete(ApplicationStep step) {
+        jdbcClient.sql("""
+                        DELETE FROM application_steps
+                        WHERE id = :id
+                          AND application_id = :applicationId
+                        """)
+                .param("id", step.id())
+                .param("applicationId", step.applicationId())
+                .update();
+    }
+
+    private ApplicationStep mapStep(java.sql.ResultSet resultSet) throws java.sql.SQLException {
+        return new ApplicationStep(
+                resultSet.getObject("id", UUID.class),
+                resultSet.getObject("application_id", UUID.class),
+                ApplicationStepType.valueOf(resultSet.getString("type")),
+                resultSet.getString("title"),
+                resultSet.getInt("position_index"),
+                resultSet.getString("objective"),
+                optionalFormat(resultSet.getString("format")),
+                optionalDate(resultSet.getObject("scheduled_at", OffsetDateTime.class)),
+                participants(resultSet.getString("participants")),
+                resultSet.getString("practical_information"),
+                resultSet.getString("preparation_notes"),
+                resultSet.getString("debrief"),
+                ApplicationStepStatus.valueOf(resultSet.getString("status"))
+        );
     }
 
     private static ApplicationStepFormat optionalFormat(String format) {

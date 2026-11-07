@@ -62,6 +62,7 @@ public class ApplicationEventRepository {
             case ApplicationChange.StatusChanged ignored -> "STATUS_CHANGED";
             case ApplicationChange.ResultChanged ignored -> "RESULT_CHANGED";
             case ApplicationChange.StepAdded ignored -> "STEP_ADDED";
+            case ApplicationChange.StepRemoved ignored -> "STEP_REMOVED";
             case ApplicationChange.StepChanged ignored -> "STEP_CHANGED";
         };
     }

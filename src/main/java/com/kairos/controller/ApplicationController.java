@@ -9,6 +9,8 @@ import com.kairos.domain.ApplicationStepFormat;
 import com.kairos.domain.ApplicationStepType;
 import com.kairos.service.ApplicationService;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +25,13 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("/api/applications")
 public class ApplicationController {
+
+    public record ApplicationDetails(
+            Application application,
+            List<ApplicationStep> steps
+    ) {}
 
     public record ChangeStatusRequest(
             ApplicationStatus status
@@ -63,6 +70,19 @@ public class ApplicationController {
 
     public ApplicationController(ApplicationService applicationService) {
         this.applicationService = applicationService;
+    }
+
+    @GetMapping
+    public List<Application> getApplications() {
+        return applicationService.getApplications();
+    }
+
+    @GetMapping("/{id}")
+    public ApplicationDetails getApplication(@PathVariable UUID id) {
+        return new ApplicationDetails(
+                applicationService.getApplication(id),
+                applicationService.getSteps(id)
+        );
     }
 
     @PatchMapping("/{id}/status")
@@ -147,5 +167,14 @@ public class ApplicationController {
                 request.debrief(),
                 request.status()
         );
+    }
+
+    @DeleteMapping("/{applicationId}/steps/{stepId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeStep(
+            @PathVariable UUID applicationId,
+            @PathVariable UUID stepId
+    ) {
+        applicationService.removeStep(applicationId, stepId);
     }
 }

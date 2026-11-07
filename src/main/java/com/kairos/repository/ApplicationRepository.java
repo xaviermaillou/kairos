@@ -7,9 +7,12 @@ import com.kairos.domain.JobOfferSnapshot;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,7 +26,20 @@ public class ApplicationRepository {
     }
 
     public Optional<Application> findById(UUID id) {
-        return jdbcClient.sql("""
+        return jdbcClient.sql(applicationSelect() + " WHERE a.id = :id")
+                .param("id", id)
+                .query(this::mapApplication)
+                .optional();
+    }
+
+    public List<Application> findAll() {
+        return jdbcClient.sql(applicationSelect() + " ORDER BY a.sent_at DESC")
+                .query(this::mapApplication)
+                .list();
+    }
+
+    private String applicationSelect() {
+        return """
                         SELECT a.id,
                                a.user_id,
                                a.sent_at,
@@ -42,31 +58,31 @@ public class ApplicationRepository {
                         FROM applications a
                         JOIN job_offer_snapshots snapshot
                           ON snapshot.id = a.job_offer_snapshot_id
-                        WHERE a.id = :id
-                        """)
-                .param("id", id)
-                .query((resultSet, rowNumber) -> new Application(
-                        resultSet.getObject("id", UUID.class),
-                        resultSet.getObject("user_id", UUID.class),
-                        resultSet.getObject("sent_at", OffsetDateTime.class).toInstant(),
-                        resultSet.getString("channel"),
-                        ApplicationStatus.valueOf(resultSet.getString("status")),
-                        resultSet.getString("result") == null
-                                ? null
-                                : ApplicationResult.valueOf(resultSet.getString("result")),
-                        new JobOfferSnapshot(
-                                resultSet.getObject("snapshot_id", UUID.class),
-                                resultSet.getObject("job_offer_id", UUID.class),
-                                resultSet.getString("offer_title"),
-                                resultSet.getString("offer_company_name"),
-                                resultSet.getString("offer_content"),
-                                resultSet.getString("offer_location"),
-                                resultSet.getString("offer_country"),
-                                resultSet.getString("offer_work_arrangement"),
-                                resultSet.getObject("captured_at", OffsetDateTime.class).toInstant()
-                        )
-                ))
-                .optional();
+                        """;
+    }
+
+    private Application mapApplication(ResultSet resultSet, int rowNumber) throws SQLException {
+        return new Application(
+                resultSet.getObject("id", UUID.class),
+                resultSet.getObject("user_id", UUID.class),
+                resultSet.getObject("sent_at", OffsetDateTime.class).toInstant(),
+                resultSet.getString("channel"),
+                ApplicationStatus.valueOf(resultSet.getString("status")),
+                resultSet.getString("result") == null
+                        ? null
+                        : ApplicationResult.valueOf(resultSet.getString("result")),
+                new JobOfferSnapshot(
+                        resultSet.getObject("snapshot_id", UUID.class),
+                        resultSet.getObject("job_offer_id", UUID.class),
+                        resultSet.getString("offer_title"),
+                        resultSet.getString("offer_company_name"),
+                        resultSet.getString("offer_content"),
+                        resultSet.getString("offer_location"),
+                        resultSet.getString("offer_country"),
+                        resultSet.getString("offer_work_arrangement"),
+                        resultSet.getObject("captured_at", OffsetDateTime.class).toInstant()
+                )
+        );
     }
 
     public Application save(Application application) {

@@ -31,6 +31,12 @@ public class DevDataSeeder implements ApplicationRunner {
     private static final UUID APPLICATION_ID = UUID.fromString(
             "50000000-0000-0000-0000-000000000001"
     );
+    private static final UUID SECOND_APPLICATION_ID = UUID.fromString(
+            "50000000-0000-0000-0000-000000000002"
+    );
+    private static final UUID THIRD_APPLICATION_ID = UUID.fromString(
+            "50000000-0000-0000-0000-000000000003"
+    );
     private static final UUID APPLICATION_STEP_ID = UUID.fromString(
             "60000000-0000-0000-0000-000000000001"
     );
@@ -52,7 +58,19 @@ public class DevDataSeeder implements ApplicationRunner {
         seedCompany();
         seedJobOffer();
         seedJobOfferSnapshot();
-        seedApplication();
+        seedApplication(APPLICATION_ID, CREATED_AT, "CAREER_PAGE", "SENT");
+        seedApplication(
+                SECOND_APPLICATION_ID,
+                CREATED_AT.minusDays(7),
+                "LINKEDIN",
+                "ONGOING"
+        );
+        seedApplication(
+                THIRD_APPLICATION_ID,
+                CREATED_AT.minusDays(14),
+                "REFERRAL",
+                "ARCHIVED"
+        );
         seedApplicationStep();
     }
 
@@ -127,7 +145,12 @@ public class DevDataSeeder implements ApplicationRunner {
                 .update();
     }
 
-    private void seedApplication() {
+    private void seedApplication(
+            UUID applicationId,
+            OffsetDateTime sentAt,
+            String channel,
+            String status
+    ) {
         jdbcClient.sql("""
                         INSERT INTO applications (
                             id,
@@ -146,12 +169,12 @@ public class DevDataSeeder implements ApplicationRunner {
                         )
                         ON CONFLICT (id) DO NOTHING
                         """)
-                .param("id", APPLICATION_ID)
+                .param("id", applicationId)
                 .param("userId", USER_ID)
                 .param("jobOfferSnapshotId", SNAPSHOT_ID)
-                .param("sentAt", CREATED_AT)
-                .param("channel", "CAREER_PAGE")
-                .param("status", "SENT")
+                .param("sentAt", sentAt)
+                .param("channel", channel)
+                .param("status", status)
                 .update();
     }
 

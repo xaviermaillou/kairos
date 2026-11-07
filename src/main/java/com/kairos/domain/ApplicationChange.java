@@ -36,6 +36,14 @@ public sealed interface ApplicationChange {
         }
     }
 
+    record StepRemoved(
+            ApplicationStep step
+    ) implements ApplicationChange {
+        public StepRemoved {
+            Checks.required(step, "step");
+        }
+    }
+
     record StepChanged(
             ApplicationStep previous,
             ApplicationStep next
