@@ -22,11 +22,12 @@ final class Checks {
     static void belongsTo(ApplicationChange change, UUID applicationId) {
         UUID owner = switch (change) {
             case ApplicationChange.StatusChanged ignored -> applicationId;
-            case ApplicationChange.InterviewStepAdded added -> added.step().applicationId();
-            case ApplicationChange.InterviewStepUpdated updated -> updated.next().applicationId();
+            case ApplicationChange.ResultChanged ignored -> applicationId;
+            case ApplicationChange.StepAdded added -> added.step().applicationId();
+            case ApplicationChange.StepChanged changed -> changed.next().applicationId();
         };
         if (!applicationId.equals(owner)) {
-            throw new IllegalArgumentException("The interview step belongs to another application");
+            throw new IllegalArgumentException("The step belongs to another application");
         }
     }
 }

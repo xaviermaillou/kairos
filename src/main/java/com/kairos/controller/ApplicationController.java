@@ -1,21 +1,63 @@
 package com.kairos.controller;
 
 import com.kairos.domain.Application;
+import com.kairos.domain.ApplicationResult;
+import com.kairos.domain.ApplicationStep;
+import com.kairos.domain.ApplicationStepStatus;
 import com.kairos.domain.ApplicationStatus;
+import com.kairos.domain.ApplicationStepFormat;
+import com.kairos.domain.ApplicationStepType;
 import com.kairos.service.ApplicationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/applications")
 public class ApplicationController {
 
-    public record ChangeStatusRequest(ApplicationStatus status) {}
+    public record ChangeStatusRequest(
+            ApplicationStatus status
+    ) {}
+
+    public record ChangeResultRequest(ApplicationResult result) {}
+
+    public record AddStepRequest(
+            ApplicationStepType type,
+            String title,
+            String objective,
+            ApplicationStepFormat format,
+            ZonedDateTime scheduledAt,
+            List<String> participants,
+            String practicalInformation,
+            String preparationNotes,
+            String debrief,
+            ApplicationStepStatus status
+    ) {}
+
+    public record ChangeStepRequest(
+            ApplicationStepType type,
+            String title,
+            Integer position,
+            String objective,
+            ApplicationStepFormat format,
+            ZonedDateTime scheduledAt,
+            List<String> participants,
+            String practicalInformation,
+            String preparationNotes,
+            String debrief,
+            ApplicationStepStatus status
+    ) {}
 
     private final ApplicationService applicationService;
 
@@ -33,5 +75,77 @@ public class ApplicationController {
         }
 
         return applicationService.changeStatus(id, request.status());
+    }
+
+    @PatchMapping("/{id}/result")
+    public Application changeResult(
+            @PathVariable UUID id,
+            @RequestBody ChangeResultRequest request
+    ) {
+        return applicationService.changeResult(id, request.result());
+    }
+
+    @PostMapping("/{id}/steps")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApplicationStep addStep(
+            @PathVariable UUID id,
+            @RequestBody AddStepRequest request
+    ) {
+        if (request.type() == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+        if (request.title() == null || request.title().isBlank()) {
+            throw new IllegalArgumentException("title must not be blank");
+        }
+
+        return applicationService.addStep(
+                id,
+                request.type(),
+                request.title(),
+                request.objective(),
+                request.format(),
+                request.scheduledAt(),
+                request.participants(),
+                request.practicalInformation(),
+                request.preparationNotes(),
+                request.debrief(),
+                request.status()
+        );
+    }
+
+    @PutMapping("/{applicationId}/steps/{stepId}")
+    public ApplicationStep changeStep(
+            @PathVariable UUID applicationId,
+            @PathVariable UUID stepId,
+            @RequestBody ChangeStepRequest request
+    ) {
+        if (request.type() == null) {
+            throw new IllegalArgumentException("type must not be null");
+        }
+        if (request.title() == null || request.title().isBlank()) {
+            throw new IllegalArgumentException("title must not be blank");
+        }
+        if (request.position() == null) {
+            throw new IllegalArgumentException("position must not be null");
+        }
+        if (request.status() == null) {
+            throw new IllegalArgumentException("status must not be null");
+        }
+
+        return applicationService.changeStep(
+                applicationId,
+                stepId,
+                request.type(),
+                request.title(),
+                request.position(),
+                request.objective(),
+                request.format(),
+                request.scheduledAt(),
+                request.participants(),
+                request.practicalInformation(),
+                request.preparationNotes(),
+                request.debrief(),
+                request.status()
+        );
     }
 }

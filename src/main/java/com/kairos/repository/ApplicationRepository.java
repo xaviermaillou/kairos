@@ -1,11 +1,13 @@
 package com.kairos.repository;
 
 import com.kairos.domain.Application;
+import com.kairos.domain.ApplicationResult;
 import com.kairos.domain.ApplicationStatus;
 import com.kairos.domain.JobOfferSnapshot;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class ApplicationRepository {
                                a.sent_at,
                                a.channel,
                                a.status,
+                               a.result,
                                snapshot.id AS snapshot_id,
                                snapshot.job_offer_id,
                                snapshot.title AS offer_title,
@@ -48,6 +51,9 @@ public class ApplicationRepository {
                         resultSet.getObject("sent_at", OffsetDateTime.class).toInstant(),
                         resultSet.getString("channel"),
                         ApplicationStatus.valueOf(resultSet.getString("status")),
+                        resultSet.getString("result") == null
+                                ? null
+                                : ApplicationResult.valueOf(resultSet.getString("result")),
                         new JobOfferSnapshot(
                                 resultSet.getObject("snapshot_id", UUID.class),
                                 resultSet.getObject("job_offer_id", UUID.class),
@@ -71,21 +77,24 @@ public class ApplicationRepository {
                             job_offer_snapshot_id,
                             sent_at,
                             channel,
-                            status
+                            status,
+                            result
                         ) VALUES (
                             :id,
                             :userId,
                             :jobOfferSnapshotId,
                             :sentAt,
                             :channel,
-                            :status
+                            :status,
+                            :result
                         )
                         ON CONFLICT (id) DO UPDATE SET
                             user_id = EXCLUDED.user_id,
                             job_offer_snapshot_id = EXCLUDED.job_offer_snapshot_id,
                             sent_at = EXCLUDED.sent_at,
                             channel = EXCLUDED.channel,
-                            status = EXCLUDED.status
+                            status = EXCLUDED.status,
+                            result = EXCLUDED.result
                         """)
                 .param("id", application.id())
                 .param("userId", application.userId())
@@ -96,6 +105,11 @@ public class ApplicationRepository {
                 )
                 .param("channel", application.channel())
                 .param("status", application.status().name())
+                .param(
+                        "result",
+                        application.result() == null ? null : application.result().name(),
+                        Types.VARCHAR
+                )
                 .update();
 
         return application;

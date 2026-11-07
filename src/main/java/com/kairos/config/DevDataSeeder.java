@@ -31,6 +31,9 @@ public class DevDataSeeder implements ApplicationRunner {
     private static final UUID APPLICATION_ID = UUID.fromString(
             "50000000-0000-0000-0000-000000000001"
     );
+    private static final UUID APPLICATION_STEP_ID = UUID.fromString(
+            "60000000-0000-0000-0000-000000000001"
+    );
     private static final OffsetDateTime CREATED_AT = OffsetDateTime.ofInstant(
             Instant.parse("2026-11-07T09:00:00Z"),
             ZoneOffset.UTC
@@ -50,6 +53,7 @@ public class DevDataSeeder implements ApplicationRunner {
         seedJobOffer();
         seedJobOfferSnapshot();
         seedApplication();
+        seedApplicationStep();
     }
 
     private void seedUser() {
@@ -148,6 +152,52 @@ public class DevDataSeeder implements ApplicationRunner {
                 .param("sentAt", CREATED_AT)
                 .param("channel", "CAREER_PAGE")
                 .param("status", "SENT")
+                .update();
+    }
+
+    private void seedApplicationStep() {
+        jdbcClient.sql("""
+                        INSERT INTO application_steps (
+                            id,
+                            application_id,
+                            type,
+                            title,
+                            position_index,
+                            objective,
+                            format,
+                            scheduled_at,
+                            participants,
+                            practical_information,
+                            preparation_notes,
+                            status
+                        ) VALUES (
+                            :id,
+                            :applicationId,
+                            :type,
+                            :title,
+                            :position,
+                            :objective,
+                            :format,
+                            :scheduledAt,
+                            CAST(:participants AS JSONB),
+                            :practicalInformation,
+                            :preparationNotes,
+                            :status
+                        )
+                        ON CONFLICT (id) DO NOTHING
+                        """)
+                .param("id", APPLICATION_STEP_ID)
+                .param("applicationId", APPLICATION_ID)
+                .param("type", "INTERVIEW")
+                .param("title", "HR interview")
+                .param("position", 0)
+                .param("objective", "Discuss the role and mutual expectations.")
+                .param("format", "VIDEO_CALL")
+                .param("scheduledAt", CREATED_AT.plusDays(3))
+                .param("participants", "[\"Alice Recruiter\"]")
+                .param("practicalInformation", "Video link sent by email.")
+                .param("preparationNotes", "Prepare a concise career overview.")
+                .param("status", "SCHEDULED")
                 .update();
     }
 }

@@ -1,6 +1,7 @@
 package com.kairos.controller;
 
 import com.kairos.service.ApplicationNotFoundException;
+import com.kairos.service.ApplicationStepNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,9 +12,9 @@ public class ApiExceptionHandler {
 
     public record ErrorResponse(int status, String error, String message) {}
 
-    @ExceptionHandler(ApplicationNotFoundException.class)
+    @ExceptionHandler({ApplicationNotFoundException.class, ApplicationStepNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(ApplicationNotFoundException exception) {
+    public ErrorResponse handleNotFound(RuntimeException exception) {
         return error(HttpStatus.NOT_FOUND, exception);
     }
 

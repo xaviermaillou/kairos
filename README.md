@@ -72,12 +72,53 @@ The sample application ID is:
 50000000-0000-0000-0000-000000000001
 ```
 
-Its status can be changed with:
+It can be changed with:
 
 ```bash
 curl -X PATCH http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/status \
   -H 'Content-Type: application/json' \
-  -d '{"status":"INTERVIEWING"}'
+  -d '{"status":"ONGOING"}'
+```
+
+The seeded application also contains a scheduled step with this ID:
+
+```text
+60000000-0000-0000-0000-000000000001
+```
+
+It can be replaced with:
+
+```bash
+curl -X PUT \
+  http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/steps/60000000-0000-0000-0000-000000000001 \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "INTERVIEW",
+    "title": "HR interview",
+    "position": 0,
+    "objective": "Discuss the role and mutual expectations.",
+    "format": "VIDEO_CALL",
+    "scheduledAt": "2026-11-10T09:00:00Z",
+    "participants": ["Alice Recruiter"],
+    "practicalInformation": "Video link sent by email.",
+    "preparationNotes": "Prepare a concise career overview.",
+    "debrief": "Positive conversation.",
+    "status": "COMPLETED"
+  }'
+```
+
+A new step can be appended to the application pipeline with:
+
+```bash
+curl -X POST \
+  http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/steps \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "type": "TECHNICAL_TEST",
+    "title": "Java exercise",
+    "format": "TAKE_HOME",
+    "status": "TO_SCHEDULE"
+  }'
 ```
 
 Stop the application with `Ctrl+C`, then remove its container with:

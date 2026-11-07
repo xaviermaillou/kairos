@@ -1,6 +1,7 @@
 package com.kairos.domain;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 public record Application(
@@ -9,6 +10,7 @@ public record Application(
         Instant sentAt,
         String channel,
         ApplicationStatus status,
+        ApplicationResult result,
         JobOfferSnapshot offerSnapshot
 ) {
     public Application {
@@ -19,22 +21,11 @@ public record Application(
         Checks.required(offerSnapshot, "offerSnapshot");
     }
 
-    public Application changeStatus(ApplicationStatus next) {
-        Checks.required(next, "next");
+    public Application changeStatus(ApplicationStatus nextStatus) {
+        Checks.required(nextStatus, "nextStatus");
 
-        if (status == next) {
+        if (status == nextStatus) {
             throw new IllegalStateException("Application already has status " + status);
-        }
-
-        boolean transitionAllowed = switch (status) {
-            case SENT -> next == ApplicationStatus.INTERVIEWING
-                    || next == ApplicationStatus.CLOSED;
-            case INTERVIEWING -> next == ApplicationStatus.CLOSED;
-            case CLOSED -> false;
-        };
-
-        if (!transitionAllowed) {
-            throw new IllegalStateException("Cannot change status from " + status + " to " + next);
         }
 
         return new Application(
@@ -42,7 +33,24 @@ public record Application(
                 userId,
                 sentAt,
                 channel,
-                next,
+                nextStatus,
+                result,
+                offerSnapshot
+        );
+    }
+
+    public Application changeResult(ApplicationResult nextResult) {
+        if (Objects.equals(result, nextResult)) {
+            throw new IllegalStateException("Application already has result " + result);
+        }
+
+        return new Application(
+                id,
+                userId,
+                sentAt,
+                channel,
+                status,
+                nextResult,
                 offerSnapshot
         );
     }
