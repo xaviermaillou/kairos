@@ -6,6 +6,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/kairos
       SPRING_DATASOURCE_USERNAME: kairos
       SPRING_DATASOURCE_PASSWORD: kairos
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       database:
         condition: service_healthy

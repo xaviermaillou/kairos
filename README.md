@@ -1,14 +1,15 @@
 # Kairos backend
 
 This repository contains the first version of the Kairos backend and domain model.
-It uses Java 21 records, Spring Boot 3 and Maven. Persistence and the business API
-have not been implemented yet.
+It uses Java 21 records, Spring Boot 3, PostgreSQL, Liquibase and Maven.
 
 ## Current scope
 
 - Immutable domain objects for job offers, applications, interview steps and received emails
 - User-approved update suggestions produced from email analysis
 - Typed application changes and an event history model
+- PostgreSQL persistence for applications and job offer snapshots
+- An API endpoint for changing an application's status
 - A Spring Boot application with a health endpoint
 
 The domain sources are under `src/main/java/com/kairos/domain`.
@@ -62,6 +63,22 @@ curl http://localhost:8080/health
 
 PostgreSQL is available on port `5432` with the development database, user and
 password all named `kairos`. Its data is stored in the `postgres-data` volume.
+
+The Compose configuration activates the `dev` Spring profile. On startup, an
+idempotent seeder creates a sample user, company, offer, snapshot and application.
+The sample application ID is:
+
+```text
+50000000-0000-0000-0000-000000000001
+```
+
+Its status can be changed with:
+
+```bash
+curl -X PATCH http://localhost:8080/applications/50000000-0000-0000-0000-000000000001/status \
+  -H 'Content-Type: application/json' \
+  -d '{"status":"INTERVIEWING"}'
+```
 
 Stop the application with `Ctrl+C`, then remove its container with:
 
