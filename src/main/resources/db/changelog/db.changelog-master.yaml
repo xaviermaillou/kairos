@@ -174,3 +174,30 @@ databaseChangeLog:
         - dropColumn:
             tableName: applications
             columnName: offer_work_arrangement
+  - changeSet:
+      id: 4-create-companies
+      author: kairos
+      changes:
+        - createTable:
+            tableName: companies
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: website
+                  type: VARCHAR(2048)
+        - addForeignKeyConstraint:
+            constraintName: fk_job_offers_company
+            baseTableName: job_offers
+            baseColumnNames: company_id
+            referencedTableName: companies
+            referencedColumnNames: id
