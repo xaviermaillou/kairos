@@ -19,6 +19,33 @@ public record ApplicationStep(
         String debrief,
         ApplicationStepStatus status
 ) {
+    public enum ApplicationStepType {
+        SCREENING,
+        INTERVIEW,
+        TECHNICAL_TEST,
+        TAKE_HOME_ASSIGNMENT,
+        LIVE_CODING,
+        FINAL_INTERVIEW,
+        OTHER
+    }
+
+    public enum ApplicationStepFormat {
+        ON_SITE,
+        VIDEO_CALL,
+        PHONE_CALL,
+        TAKE_HOME,
+        LIVE,
+        ASYNCHRONOUS,
+        OTHER
+    }
+
+    public enum ApplicationStepStatus {
+        TO_SCHEDULE,
+        SCHEDULED,
+        COMPLETED,
+        CANCELLED
+    }
+
     public ApplicationStep {
         Checks.required(id, "id");
         Checks.required(applicationId, "applicationId");

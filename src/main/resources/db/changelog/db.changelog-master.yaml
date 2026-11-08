@@ -348,3 +348,33 @@ databaseChangeLog:
               ALTER TABLE application_steps
               ALTER COLUMN participants TYPE JSONB
               USING to_jsonb(participants)
+  - changeSet:
+      id: 8-add-application-event-lifecycle
+      author: kairos
+      changes:
+        - renameColumn:
+            tableName: application_events
+            oldColumnName: occurred_at
+            newColumnName: created_at
+            columnDataType: TIMESTAMP WITH TIME ZONE
+        - dropColumn:
+            tableName: application_events
+            columnName: suggestion_id
+        - addColumn:
+            tableName: application_events
+            columns:
+              - column:
+                  name: status
+                  type: VARCHAR(32)
+                  defaultValue: APPLIED
+                  constraints:
+                    nullable: false
+              - column:
+                  name: decided_at
+                  type: TIMESTAMP WITH TIME ZONE
+        - update:
+            tableName: application_events
+            columns:
+              - column:
+                  name: decided_at
+                  valueComputed: created_at

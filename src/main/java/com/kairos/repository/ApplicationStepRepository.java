@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kairos.domain.ApplicationStep;
-import com.kairos.domain.ApplicationStepFormat;
-import com.kairos.domain.ApplicationStepStatus;
-import com.kairos.domain.ApplicationStepType;
+import com.kairos.domain.ApplicationStep.ApplicationStepFormat;
+import com.kairos.domain.ApplicationStep.ApplicationStepStatus;
+import com.kairos.domain.ApplicationStep.ApplicationStepType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 

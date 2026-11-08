@@ -19,13 +19,13 @@ final class Checks {
         return value;
     }
 
-    static void belongsTo(ApplicationChange change, UUID applicationId) {
-        UUID owner = switch (change) {
-            case ApplicationChange.StatusChanged ignored -> applicationId;
-            case ApplicationChange.ResultChanged ignored -> applicationId;
-            case ApplicationChange.StepAdded added -> added.step().applicationId();
-            case ApplicationChange.StepRemoved removed -> removed.step().applicationId();
-            case ApplicationChange.StepChanged changed -> changed.next().applicationId();
+    static void belongsTo(ApplicationEvent.EventDetails details, UUID applicationId) {
+        UUID owner = switch (details) {
+            case ApplicationEvent.StatusChanged ignored -> applicationId;
+            case ApplicationEvent.ResultChanged ignored -> applicationId;
+            case ApplicationEvent.StepAdded added -> added.step().applicationId();
+            case ApplicationEvent.StepRemoved removed -> removed.step().applicationId();
+            case ApplicationEvent.StepChanged changed -> changed.next().applicationId();
         };
         if (!applicationId.equals(owner)) {
             throw new IllegalArgumentException("The step belongs to another application");

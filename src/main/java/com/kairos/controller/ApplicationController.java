@@ -1,12 +1,12 @@
 package com.kairos.controller;
 
 import com.kairos.domain.Application;
-import com.kairos.domain.ApplicationResult;
+import com.kairos.domain.Application.ApplicationResult;
+import com.kairos.domain.Application.ApplicationStatus;
 import com.kairos.domain.ApplicationStep;
-import com.kairos.domain.ApplicationStepStatus;
-import com.kairos.domain.ApplicationStatus;
-import com.kairos.domain.ApplicationStepFormat;
-import com.kairos.domain.ApplicationStepType;
+import com.kairos.domain.ApplicationStep.ApplicationStepFormat;
+import com.kairos.domain.ApplicationStep.ApplicationStepStatus;
+import com.kairos.domain.ApplicationStep.ApplicationStepType;
 import com.kairos.service.ApplicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;

@@ -13,6 +13,19 @@ public record Application(
         ApplicationResult result,
         JobOfferSnapshot offerSnapshot
 ) {
+    public enum ApplicationStatus {
+        SENT,
+        ONGOING,
+        ARCHIVED
+    }
+
+    public enum ApplicationResult {
+        SUCCEEDED,
+        REJECTED,
+        WITHDRAWN,
+        NO_RESPONSE
+    }
+
     public Application {
         Checks.required(id, "id");
         Checks.required(userId, "userId");

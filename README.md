@@ -6,7 +6,7 @@ It uses Java 21 records, Spring Boot 3, PostgreSQL, Liquibase and Maven.
 ## Current scope
 
 - Immutable domain objects for job offers, applications, interview steps and received emails
-- User-approved update suggestions produced from email analysis
+- Proposed, applied or rejected application events
 - Typed application changes and an event history model
 - PostgreSQL persistence for applications and job offer snapshots
 - An API endpoint for changing an application's status

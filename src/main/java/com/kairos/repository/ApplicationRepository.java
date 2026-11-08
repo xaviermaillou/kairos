@@ -1,8 +1,8 @@
 package com.kairos.repository;
 
 import com.kairos.domain.Application;
-import com.kairos.domain.ApplicationResult;
-import com.kairos.domain.ApplicationStatus;
+import com.kairos.domain.Application.ApplicationResult;
+import com.kairos.domain.Application.ApplicationStatus;
 import com.kairos.domain.JobOfferSnapshot;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;

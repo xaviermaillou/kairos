@@ -1,14 +1,13 @@
 package com.kairos.service;
 
 import com.kairos.domain.Application;
-import com.kairos.domain.ApplicationChange;
+import com.kairos.domain.Application.ApplicationResult;
+import com.kairos.domain.Application.ApplicationStatus;
 import com.kairos.domain.ApplicationEvent;
-import com.kairos.domain.ApplicationResult;
 import com.kairos.domain.ApplicationStep;
-import com.kairos.domain.ApplicationStepFormat;
-import com.kairos.domain.ApplicationStepStatus;
-import com.kairos.domain.ApplicationStepType;
-import com.kairos.domain.ApplicationStatus;
+import com.kairos.domain.ApplicationStep.ApplicationStepFormat;
+import com.kairos.domain.ApplicationStep.ApplicationStepStatus;
+import com.kairos.domain.ApplicationStep.ApplicationStepType;
 import com.kairos.repository.ApplicationEventRepository;
 import com.kairos.repository.ApplicationRepository;
 import com.kairos.repository.ApplicationStepRepository;
@@ -61,17 +60,15 @@ public class ApplicationService {
         Application application = findApplication(applicationId);
 
         Application updated = application.changeStatus(nextStatus);
-        ApplicationChange.StatusChanged change = new ApplicationChange.StatusChanged(
+        ApplicationEvent.StatusChanged details = new ApplicationEvent.StatusChanged(
                 application.status(),
                 updated.status()
         );
-        ApplicationEvent event = new ApplicationEvent(
-                UUID.randomUUID(),
+        ApplicationEvent event = ApplicationEvent.applied(
                 application.id(),
                 application.userId(),
-                change,
-                Instant.now(),
-                null
+                details,
+                Instant.now()
         );
 
         Application saved = applicationRepository.save(updated);
@@ -84,17 +81,15 @@ public class ApplicationService {
     public Application changeResult(UUID applicationId, ApplicationResult nextResult) {
         Application application = findApplication(applicationId);
         Application updated = application.changeResult(nextResult);
-        ApplicationChange.ResultChanged change = new ApplicationChange.ResultChanged(
+        ApplicationEvent.ResultChanged details = new ApplicationEvent.ResultChanged(
                 application.result(),
                 updated.result()
         );
-        ApplicationEvent event = new ApplicationEvent(
-                UUID.randomUUID(),
+        ApplicationEvent event = ApplicationEvent.applied(
                 application.id(),
                 application.userId(),
-                change,
-                Instant.now(),
-                null
+                details,
+                Instant.now()
         );
 
         Application saved = applicationRepository.save(updated);
@@ -133,14 +128,12 @@ public class ApplicationService {
                 debrief,
                 status == null ? ApplicationStepStatus.TO_SCHEDULE : status
         );
-        ApplicationChange.StepAdded change = new ApplicationChange.StepAdded(step);
-        ApplicationEvent event = new ApplicationEvent(
-                UUID.randomUUID(),
+        ApplicationEvent.StepAdded details = new ApplicationEvent.StepAdded(step);
+        ApplicationEvent event = ApplicationEvent.applied(
                 application.id(),
                 application.userId(),
-                change,
-                Instant.now(),
-                null
+                details,
+                Instant.now()
         );
 
         ApplicationStep saved = applicationStepRepository.save(step);
@@ -184,14 +177,12 @@ public class ApplicationService {
                 debrief,
                 status
         );
-        ApplicationChange.StepChanged change = new ApplicationChange.StepChanged(step, updated);
-        ApplicationEvent event = new ApplicationEvent(
-                UUID.randomUUID(),
+        ApplicationEvent.StepChanged details = new ApplicationEvent.StepChanged(step, updated);
+        ApplicationEvent event = ApplicationEvent.applied(
                 application.id(),
                 application.userId(),
-                change,
-                Instant.now(),
-                null
+                details,
+                Instant.now()
         );
 
         ApplicationStep saved = applicationStepRepository.update(updated);
@@ -207,14 +198,12 @@ public class ApplicationService {
                 .orElseThrow(() -> new ApplicationStepNotFoundException(
                         "Unknown application step: " + stepId
                 ));
-        ApplicationChange.StepRemoved change = new ApplicationChange.StepRemoved(step);
-        ApplicationEvent event = new ApplicationEvent(
-                UUID.randomUUID(),
+        ApplicationEvent.StepRemoved details = new ApplicationEvent.StepRemoved(step);
+        ApplicationEvent event = ApplicationEvent.applied(
                 application.id(),
                 application.userId(),
-                change,
-                Instant.now(),
-                null
+                details,
+                Instant.now()
         );
 
         applicationStepRepository.delete(step);
