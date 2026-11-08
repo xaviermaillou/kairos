@@ -1,5 +1,7 @@
 package com.kairos.domain;
 
+import com.kairos.validation.Checks;
+
 import java.util.UUID;
 
 public record User(UUID id, String contactEmail) {

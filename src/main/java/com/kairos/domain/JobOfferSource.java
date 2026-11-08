@@ -1,5 +1,7 @@
 package com.kairos.domain;
 
+import com.kairos.validation.Checks;
+
 import java.net.URI;
 import java.time.Instant;
 import java.util.UUID;

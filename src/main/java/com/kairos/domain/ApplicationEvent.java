@@ -2,6 +2,7 @@ package com.kairos.domain;
 
 import com.kairos.domain.Application.ApplicationResult;
 import com.kairos.domain.Application.ApplicationStatus;
+import com.kairos.validation.Checks;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -85,10 +86,13 @@ public record ApplicationEvent(
         Checks.required(details, "details");
         Checks.required(status, "status");
         Checks.required(createdAt, "createdAt");
-        Checks.belongsTo(details, applicationId);
+        ensureBelongsToApplication(details, applicationId);
 
-        if ((status == EventStatus.PENDING) != (decidedAt == null)) {
-            throw new IllegalArgumentException("Only decided events require a decision date");
+        if (status == EventStatus.PENDING && decidedAt != null) {
+            throw new IllegalArgumentException("A pending event cannot have a decision date");
+        }
+        if (status != EventStatus.PENDING && decidedAt == null) {
+            throw new IllegalArgumentException("A decided event requires a decision date");
         }
         if (decidedAt != null && decidedAt.isBefore(createdAt)) {
             throw new IllegalArgumentException("Decision date cannot precede creation date");
@@ -128,5 +132,21 @@ public record ApplicationEvent(
                 createdAt,
                 Checks.required(at, "at")
         );
+    }
+
+    private static void ensureBelongsToApplication(
+            EventDetails details,
+            UUID applicationId
+    ) {
+        UUID owner = switch (details) {
+            case StatusChanged ignored -> applicationId;
+            case ResultChanged ignored -> applicationId;
+            case StepAdded added -> added.step().applicationId();
+            case StepRemoved removed -> removed.step().applicationId();
+            case StepChanged changed -> changed.next().applicationId();
+        };
+        if (!applicationId.equals(owner)) {
+            throw new IllegalArgumentException("The step belongs to another application");
+        }
     }
 }

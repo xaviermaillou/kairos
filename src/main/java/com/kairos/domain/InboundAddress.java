@@ -1,5 +1,7 @@
 package com.kairos.domain;
 
+import com.kairos.validation.Checks;
+
 import java.util.UUID;
 
 /** An address dedicated to receiving messages on behalf of a user. */

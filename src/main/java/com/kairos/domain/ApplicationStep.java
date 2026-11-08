@@ -1,5 +1,7 @@
 package com.kairos.domain;
 
+import com.kairos.validation.Checks;
+
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
